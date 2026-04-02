@@ -23,45 +23,61 @@ class EmailRouter:
     def route(
         self,
         email: Dict[str, Any],
-        threshold: float = 0.1
+        threshold: float = 0.01,  # 1% threshold - catch even subtle patterns
+        min_specialists: int = 3,  # Minimum 3 for comprehensive analysis
+        max_specialists: int = 5   # Can use all 5 if they all detect something
     ) -> List[Tuple[str, TranslationOrganism, float]]:
         """
         Determine which specialists should handle this email.
 
+        Strategy: Include ALL specialists above 5% threshold for comprehensive analysis.
+        This ensures multi-pattern emails get full coverage from all relevant specialists.
+
         Args:
             email: Email data
-            threshold: Minimum detection score to activate specialist
+            threshold: Minimum detection score to activate specialist (5%)
+            min_specialists: Minimum number to activate (default 2)
+            max_specialists: Maximum number to activate (default 5)
 
         Returns:
             List of (specialist_type, best_organism, detection_score) tuples
         """
-        specialists_to_activate = []
+        all_scores = []
 
         email_body = email.get('body', '')
         email_subject = email.get('subject', '')
 
+        # Get detection scores from ALL specialists
         for specialist_type, swarm in self.swarm_system.swarms.items():
             best_organism = swarm.get_best()
 
             # Calculate how strongly this specialist detects its BS in the email
             detection_score = best_organism.get_detection_score(email_body, email_subject)
 
-            if detection_score >= threshold:
-                specialists_to_activate.append((specialist_type, best_organism, detection_score))
+            all_scores.append((specialist_type, best_organism, detection_score))
 
         # Sort by detection score (strongest first)
-        specialists_to_activate.sort(key=lambda x: x[2], reverse=True)
+        all_scores.sort(key=lambda x: x[2], reverse=True)
 
-        # Always activate at least the top scorer if we got any
-        if not specialists_to_activate and self.swarm_system.swarms:
-            # Fallback: use all specialists and pick best
-            for specialist_type, swarm in self.swarm_system.swarms.items():
-                best = swarm.get_best()
-                score = best.get_detection_score(email_body, email_subject)
-                specialists_to_activate.append((specialist_type, best, score))
+        specialists_to_activate = []
 
-            specialists_to_activate.sort(key=lambda x: x[2], reverse=True)
-            specialists_to_activate = specialists_to_activate[:1]  # Take only the best
+        # Strategy: Include ALL specialists above threshold (comprehensive analysis)
+        # Then ensure minimum count if needed
+        for specialist_type, organism, score in all_scores:
+            # Include if above threshold OR we haven't hit minimum yet
+            if score >= threshold:
+                specialists_to_activate.append((specialist_type, organism, score))
+            elif len(specialists_to_activate) < min_specialists:
+                specialists_to_activate.append((specialist_type, organism, score))
+
+            # Stop at max_specialists
+            if len(specialists_to_activate) >= max_specialists:
+                break
+
+        # Ensure we always have at least min_specialists (even with very low scores)
+        while len(specialists_to_activate) < min_specialists and len(all_scores) > len(specialists_to_activate):
+            idx = len(specialists_to_activate)
+            specialists_to_activate.append(all_scores[idx])
 
         return specialists_to_activate
 
@@ -84,23 +100,23 @@ class EnsembleTranslator:
     def translate(
         self,
         email: Dict[str, Any],
-        max_specialists: int = 3
+        max_specialists: int = 5  # Allow up to all 5 specialists
     ) -> Dict[str, Any]:
         """
         Translate email using ensemble of specialists.
 
         Args:
             email: Email to translate
-            max_specialists: Maximum number of specialists to use
+            max_specialists: Maximum number of specialists to use (default 5)
 
         Returns:
             Dictionary with translation results
         """
-        # Route to specialists
+        # Route to specialists (router already handles max_specialists)
         specialists = self.router.route(email)
 
-        # Limit number of specialists
-        specialists = specialists[:max_specialists]
+        # Don't limit further - let the router's logic decide
+        # specialists = specialists[:max_specialists]  # REMOVED - router handles this
 
         if not specialists:
             return {

@@ -21,7 +21,7 @@ class TranslationEvaluator:
     - Conciseness (1-10): Is it concise or overly verbose?
     """
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "claude-3-5-sonnet-20241022"):
+    def __init__(self, api_key: Optional[str] = None, model: str = "claude-3-haiku-20240307"):
         self.client = Anthropic(api_key=api_key or os.environ.get("ANTHROPIC_API_KEY"))
         self.model = model
 
@@ -109,9 +109,36 @@ Respond ONLY with valid JSON in this exact format:
             elif "```" in result_text:
                 result_text = result_text.split("```")[1].split("```")[0].strip()
 
+            # Clean up common JSON issues
+            # Remove control characters that break JSON parsing
+            result_text = ''.join(char for char in result_text if ord(char) >= 32 or char in '\n\r\t')
+
+            # Try to parse JSON
             result = json.loads(result_text)
             return result
 
+        except json.JSONDecodeError as e:
+            print(f"Evaluation error: {e}")
+            # Try to extract scores manually if JSON fails
+            try:
+                import re
+                clarity = float(re.search(r'"clarity_score":\s*(\d+\.?\d*)', result_text).group(1))
+                bs_det = float(re.search(r'"bs_detection_score":\s*(\d+\.?\d*)', result_text).group(1))
+                intent = float(re.search(r'"intent_exposure_score":\s*(\d+\.?\d*)', result_text).group(1))
+                concise = float(re.search(r'"conciseness_score":\s*(\d+\.?\d*)', result_text).group(1))
+
+                return {
+                    'clarity_score': clarity,
+                    'bs_detection_score': bs_det,
+                    'intent_exposure_score': intent,
+                    'conciseness_score': concise,
+                    'overall_score': (clarity + bs_det + intent + concise) / 4,
+                    'feedback': 'Parsed from malformed JSON',
+                    'missed_manipulations': [],
+                    'improvements': []
+                }
+            except:
+                pass
         except Exception as e:
             print(f"Evaluation error: {e}")
             # Return default low scores on error

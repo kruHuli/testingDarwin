@@ -4,6 +4,7 @@ Darwinian evolution engine for BS translation organisms.
 
 import random
 import json
+import time
 from typing import List, Dict, Any, Optional
 from tqdm import tqdm
 from .organism import TranslationOrganism
@@ -130,12 +131,18 @@ class EvolutionEngine:
                 # Translate email using organism
                 translation = self.translator.translate(email, organism)
 
+                # Add small delay to avoid rate limits (50 req/min = ~1.2s per request)
+                time.sleep(1.3)
+
                 # Evaluate translation
                 evaluation = self.evaluator.evaluate_translation(
                     email,
                     translation,
                     organism.specialist_type
                 )
+
+                # Add small delay after evaluation
+                time.sleep(1.3)
 
                 # Calculate fitness
                 fitness = self.evaluator.calculate_fitness(evaluation)

@@ -22,8 +22,9 @@ def create_urgency_manipulator_specialist() -> TranslationOrganism:
         ),
         DetectionPattern(
             trigger_phrases=["just following up", "per my last email", "haven't heard back",
-                           "following up on", "circling back"],
-            context_clues=["waiting for", "still need", "reminder"],
+                           "following up on", "circling back", "follow up", "wanted to follow up",
+                           "get ahead of", "trying to get ahead of"],
+            context_clues=["waiting for", "still need", "reminder", "came up", "questions came up"],
             manipulation_type="fake_urgency",
             weight=1.2
         ),
@@ -84,8 +85,9 @@ def create_flattery_manipulator_specialist() -> TranslationOrganism:
     detection_patterns = [
         DetectionPattern(
             trigger_phrases=["you're the best at", "you're the only one who", "your expertise",
-                           "you always", "so good at", "expert opinion", "you're literally the only"],
-            context_clues=["need your help", "could you", "would you mind", "favor"],
+                           "you always", "so good at", "expert opinion", "you're literally the only",
+                           "your experience", "given your experience", "your perspective"],
+            context_clues=["need your help", "could you", "would you mind", "favor", "benefit from your"],
             manipulation_type="expertise_flattery",
             weight=1.6
         ),
@@ -222,8 +224,9 @@ def create_responsibility_dodging_specialist() -> TranslationOrganism:
     detection_patterns = [
         DetectionPattern(
             trigger_phrases=["leadership wants", "from above", "management decided",
-                           "not my decision", "company policy", "directive from"],
-            context_clues=["unfortunately", "I know it's frustrating", "I agree but"],
+                           "not my decision", "company policy", "directive from",
+                           "came up in", "questions came up", "leadership sync", "exec team asked"],
+            context_clues=["unfortunately", "I know it's frustrating", "I agree but", "came up", "asked for"],
             manipulation_type="authority_shield",
             weight=1.6
         ),
@@ -298,8 +301,10 @@ def create_visibility_manipulation_specialist() -> TranslationOrganism:
     detection_patterns = [
         DetectionPattern(
             trigger_phrases=["great opportunity", "visibility", "exposure", "leadership will see",
-                           "high-profile", "strategic initiative", "career growth"],
-            context_clues=["would be great for you", "perfect opportunity", "showcase your"],
+                           "high-profile", "strategic initiative", "career growth",
+                           "leadership sync", "leadership meeting", "exec team", "board meeting"],
+            context_clues=["would be great for you", "perfect opportunity", "showcase your",
+                           "great visibility", "visibility for you", "board"],
             manipulation_type="exposure_promise",
             weight=1.7
         ),

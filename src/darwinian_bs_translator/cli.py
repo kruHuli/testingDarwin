@@ -15,6 +15,7 @@ from .evaluator import TranslationEvaluator
 from .translator import BSEmailTranslator
 from .mutator import OrganismMutator
 from .ensemble import EmailRouter, EnsembleTranslator
+from .actionable_translator import ActionableEmailAnalyzer
 
 # Initialize colorama for cross-platform colored output
 init(autoreset=True)
@@ -122,8 +123,16 @@ class BSTranslatorCLI:
         # Translate
         result = self.ensemble.translate(email)
 
+        # Reframe into actionable analysis
+        analyzer = ActionableEmailAnalyzer(api_key=self.api_key)
+        actionable = analyzer.reframe_translation(
+            email,
+            result['final_translation'],
+            result['specialists_used']
+        )
+
         # Display results
-        self._display_translation(email, result)
+        self._display_actionable_translation(email, result, actionable)
 
     def test(self, args):
         """Test system on sample emails."""
@@ -190,8 +199,39 @@ class BSTranslatorCLI:
             'body': body
         }
 
+    def _display_actionable_translation(self, email: dict, result: dict, actionable: dict):
+        """Display actionable analysis results."""
+        print(f"{Fore.CYAN}ORIGINAL EMAIL:{Style.RESET_ALL}")
+        print(f"Subject: {Fore.WHITE}{email.get('subject', '')}{Style.RESET_ALL}")
+        print(f"From: {email.get('sender', '')} ({email.get('sender_level', '')})")
+        print(f"\nBody:\n{email.get('body', '')}")
+
+        # Show patterns detected with confidence
+        if result['specialist_translations']:
+            print(f"\n{Fore.CYAN}📊 PATTERNS DETECTED:{Style.RESET_ALL}")
+            for specialist, data in result['specialist_translations'].items():
+                confidence_pct = data['detection_score'] * 100
+                bar_length = int(data['detection_score'] * 20)
+                bar = '█' * bar_length + '░' * (20 - bar_length)
+
+                # Friendly names
+                friendly_names = {
+                    'urgency_manipulator': 'Timeline Pressure',
+                    'flattery_manipulator': 'Relationship Building',
+                    'scope_creep': 'Scope Clarification',
+                    'responsibility_dodging': 'Decision Ownership',
+                    'visibility_manipulation': 'Career Opportunity'
+                }
+                friendly = friendly_names.get(specialist, specialist)
+                print(f"  {friendly:25s} [{bar}] {confidence_pct:5.1f}%")
+
+        # Show actionable analysis
+        print(f"\n{Fore.GREEN}{'='*60}")
+        print(f"SMART EMAIL ANALYSIS:{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{actionable['actionable_analysis']}{Style.RESET_ALL}")
+
     def _display_translation(self, email: dict, result: dict):
-        """Display translation results."""
+        """Display translation results (legacy mode for testing)."""
         print(f"{Fore.CYAN}ORIGINAL EMAIL:{Style.RESET_ALL}")
         print(f"Subject: {Fore.WHITE}{email.get('subject', '')}{Style.RESET_ALL}")
         print(f"From: {email.get('sender', '')} ({email.get('sender_level', '')})")
@@ -206,6 +246,15 @@ class BSTranslatorCLI:
         print(f"{Fore.GREEN}{result['final_translation']}{Style.RESET_ALL}")
 
         print(f"\n{Fore.CYAN}Specialists used: {', '.join(result['specialists_used'])}{Style.RESET_ALL}")
+
+        # Always show detection scores
+        if result['specialist_translations']:
+            print(f"\n{Fore.CYAN}Detection Confidence Scores:{Style.RESET_ALL}")
+            for specialist, data in result['specialist_translations'].items():
+                confidence_pct = data['detection_score'] * 100
+                bar_length = int(data['detection_score'] * 20)
+                bar = '█' * bar_length + '░' * (20 - bar_length)
+                print(f"  {specialist:25s} [{bar}] {confidence_pct:5.1f}%")
 
         if len(result['specialist_translations']) > 1:
             print(f"\n{Fore.CYAN}Individual specialist translations:{Style.RESET_ALL}")
