@@ -92,7 +92,7 @@ class BSTranslatorCLI:
     def translate(self, args):
         """Translate an email using evolved swarms."""
         print(f"\n{Fore.CYAN}{'='*60}")
-        print(f"CORPORATE BS EMAIL TRANSLATOR - TRANSLATION MODE")
+        print(f"SMART EMAIL ANALYZER - AI-Powered Communication Insights")
         print(f"{'='*60}{Style.RESET_ALL}\n")
 
         # Load evolved swarms
@@ -216,18 +216,18 @@ class BSTranslatorCLI:
 
                 # Friendly names
                 friendly_names = {
-                    'urgency_manipulator': 'Timeline Pressure',
-                    'flattery_manipulator': 'Relationship Building',
-                    'scope_creep': 'Scope Clarification',
-                    'responsibility_dodging': 'Decision Ownership',
-                    'visibility_manipulation': 'Career Opportunity'
+                    'urgency_manipulator': 'Time Sensitivity',
+                    'flattery_manipulator': 'Expertise Recognition',
+                    'scope_creep': 'Work Scope Analysis',
+                    'responsibility_dodging': 'Authority Context',
+                    'visibility_manipulation': 'Strategic Visibility'
                 }
                 friendly = friendly_names.get(specialist, specialist)
                 print(f"  {friendly:25s} [{bar}] {confidence_pct:5.1f}%")
 
         # Show actionable analysis
         print(f"\n{Fore.GREEN}{'='*60}")
-        print(f"SMART EMAIL ANALYSIS:{Style.RESET_ALL}")
+        print(f"AI COMMUNICATION INSIGHTS:{Style.RESET_ALL}")
         print(f"{Fore.GREEN}{actionable['actionable_analysis']}{Style.RESET_ALL}")
 
     def _display_translation(self, email: dict, result: dict):
