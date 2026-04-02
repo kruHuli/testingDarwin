@@ -128,7 +128,8 @@ class BSTranslatorCLI:
         actionable = analyzer.reframe_translation(
             email,
             result['final_translation'],
-            result['specialists_used']
+            result['specialists_used'],
+            result['specialist_translations']
         )
 
         # Display results

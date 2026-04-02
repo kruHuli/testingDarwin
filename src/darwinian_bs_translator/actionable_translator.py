@@ -22,7 +22,8 @@ class ActionableEmailAnalyzer:
         self,
         email: Dict[str, Any],
         raw_translation: str,
-        specialist_types: list
+        specialist_types: list,
+        specialist_data: Dict[str, Any] = None
     ) -> Dict[str, Any]:
         """
         Convert negative translation into constructive action plan.
@@ -31,10 +32,16 @@ class ActionableEmailAnalyzer:
             email: Original email data
             raw_translation: The BS-detecting translation
             specialist_types: Which specialists were activated
+            specialist_data: Detection scores and data from specialists
 
         Returns:
             Dictionary with constructive reframing
         """
+        # Check if this is a low-confidence email (all scores < 15%)
+        if specialist_data:
+            max_score = max((data['detection_score'] for data in specialist_data.values()), default=0)
+            if max_score < 0.15:  # Less than 15% confidence
+                return self._create_low_confidence_response(email)
         email_subject = email.get('subject', '')
         email_body = email.get('body', '')
         sender = email.get('sender', 'Sender')
@@ -187,3 +194,16 @@ Keep it concise and actionable."""
 3️⃣ DECLINE: "Swamped {timeline}. Can [colleague] help instead?"
 
 💡 TIP: List all deliverables before committing."""
+
+    def _create_low_confidence_response(self, email: Dict[str, Any]) -> Dict[str, Any]:
+        """Create response for straightforward emails with no concerning patterns."""
+
+        return {
+            'actionable_analysis': """📋 ANALYSIS: This appears to be a straightforward communication.
+
+✅ No significant communication patterns detected. This email seems clear and direct.
+
+💬 SUGGESTED RESPONSE: Respond normally based on the content.""",
+            'patterns_detected': [],
+            'tone': 'neutral'
+        }
