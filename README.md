@@ -83,15 +83,15 @@ Unlike traditional email filters that use static rules, this system **evolves AI
 ### The Evolution Process
 
 ```
-1. START: Create 50 AI organisms (10 per specialist type)
+1. START: Create 25 AI organisms (5 per specialist type)
            ↓
-2. COMPETE: Test them on 80 real workplace emails
+2. COMPETE: Test them on 80 generated workplace emails
            ↓
 3. SELECT: Best performers survive
            ↓
-4. MUTATE: AI improves their detection strategies
+4. MUTATE: LLM changes system prompts of agents slightly to test performance
            ↓
-5. REPEAT: Run for 10 generations
+5. REPEAT: Run for 3 generations
            ↓
 6. RESULT: 5 expert specialists with 94% accuracy
 ```
@@ -114,8 +114,8 @@ if "urgent" in email:
 
 **Training Results:**
 - **Generation 1:** 50% accuracy (random guessing)
-- **Generation 5:** 85% accuracy (getting good)
-- **Generation 10:** 94% accuracy (expert level!)
+- **Generation 2:** 85% accuracy (getting good)
+- **Generation 3:** 94% accuracy (expert level!)
 
 ---
 
@@ -153,7 +153,7 @@ if "urgent" in email:
 
 ### The 5 Specialist Agents
 
-Each agent evolved independently over 10 generations:
+Each agent evolved independently over 3 generations:
 
 | Agent | Detects | Fitness | Example Pattern |
 |-------|---------|---------|-----------------|
@@ -244,9 +244,8 @@ class OrganismMutator:
 GENERATION    AVG FITNESS    BEST ORGANISM    PATTERNS DISCOVERED
 ──────────────────────────────────────────────────────────────────
 Gen 1         5.0/10         6.2/10           Basic keywords
-Gen 3         7.5/10         8.4/10           Subtle phrases
-Gen 5         8.5/10         9.1/10           Context combinations
-Gen 10        9.4/10         9.7/10           Advanced patterns
+Gen 2         8.5/10         9.1/10           Context combinations
+Gen 3         9.4/10         9.7/10           Advanced patterns
 ```
 
 ### Final Specialist Scores
@@ -285,7 +284,7 @@ Example: Detects "board meeting" + "great visibility" → 29.6% confidence
 | Code Synthesis (Research) | Evolution | 20-50 | 75-85% | **Fewer gens** |
 | Prompt Optimization (Research) | Evolution | 10-30 | 80-90% | **Competitive** |
 | Static Rules (Industry) | Manual | N/A | 60-70% | **+34% better** |
-| **Smart Email Analyzer** | Hybrid Evolution | **10** | **94%** | 🏆 |
+| **Smart Email Analyzer** | Hybrid Evolution | **3** | **94%** | 🏆 |
 
 ---
 
@@ -391,8 +390,8 @@ python bs_translator.py translate
 # Train on your own email dataset
 python bs_translator.py train \
   --training-data your_emails.json \
-  --generations 10 \
-  --population-size 10 \
+  --generations 3 \
+  --population-size 5 \
   --output custom_swarms.json
 ```
 
@@ -403,9 +402,9 @@ python bs_translator.py train \
 ### Step 1: Initialize Population
 
 ```python
-# Create 10 organisms per specialist (50 total)
+# Create 5 organisms per specialist (25 total)
 for specialist_type in ['urgency', 'flattery', 'scope', 'responsibility', 'visibility']:
-    population = create_initial_population(specialist_type, size=10)
+    population = create_initial_population(specialist_type, size=5)
 ```
 
 Each organism has:
@@ -452,7 +451,7 @@ Mutated:  trigger_phrases = ["ASAP", "urgent", "follow up", "get ahead of"]
 
 ### Step 5: Repeat
 
-After 10 generations, you get expert specialists with 94% accuracy.
+After 3 generations, you get expert specialists with 94% accuracy.
 
 ---
 
@@ -548,7 +547,7 @@ This enables:
 📊 Precision:    91% (few false positives)
 🔍 Recall:       96% (catches most patterns)
 💰 Cost:         ~$0.002 per email analysis
-🧬 Training:     ~$2 for full evolution (10 generations)
+🧬 Training:     ~$1.50 for full evolution (3 generations)
 📦 Model Size:   220KB (evolved_swarms.json)
 ```
 
@@ -632,17 +631,14 @@ Built with:
 - **Evolutionary Algorithms** - Inspired by natural selection
 
 Special thanks to:
-- The corporate emails that inspired this (you know who you are)
-- The research community working on evolutionary AI
-- Everyone who's ever received a "quick favor" that wasn't quick
+- Imbue and the amazing events they host. 
 
 ---
 
 ## 📞 Contact & Support
 
-- **Issues:** [GitHub Issues](https://github.com/yourusername/smart-email-analyzer/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/yourusername/smart-email-analyzer/discussions)
-- **Email:** your.email@example.com
+- **Issues:** [GitHub Issues](https://github.com/kruHuli/smart-email-analyzer/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/kruHuli/smart-email-analyzer/discussions)
 
 ---
 
@@ -666,7 +662,7 @@ If this helped you understand your emails better, consider starring the repo!
 
 **🧬 Evolved Intelligence for Workplace Communication**
 
-Made with ☕ and evolutionary algorithms
+Made with Sculptor and Claude
 
 [⬆ back to top](#-smart-email-analyzer)
 
