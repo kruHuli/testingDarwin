@@ -646,7 +646,7 @@ Special thanks to:
 
 Watch it in action:
 
-[![Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+[![Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://youtu.be/xcz59kUW8Qs)
 
 ---
 
